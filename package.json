@@ -1,0 +1,21 @@
+{
+  "name": "svgcombiner",
+  "version": "1.0.0",
+  "description": "Combines multiple svg files into a single one, using <symbol> tag instead of <g> ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rimraf ./dist/ && babel ./ --out-dir ./dist/ --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log --copy-files",
+    "start": "npm run build && node dist/index.js"
+  },
+  "author": "Welington Silva",
+  "license": "MIT",
+  "dependencies": {
+    "rimraf": "^2.6.2",
+    "svg-parser": "^1.0.5"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.1"
+  }
+}
