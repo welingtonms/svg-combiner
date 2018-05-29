@@ -1,7 +1,7 @@
 {
   "name": "svgcombiner",
   "version": "1.0.0",
-  "description": "Combines multiple svg files into a single one, using <symbol> tag instead of <g> ",
+  "description": "Combines multiple svg files into a single one, using <symbol> tag instead of <g>",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

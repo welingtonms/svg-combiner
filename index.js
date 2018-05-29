@@ -1,5 +1,5 @@
-import fs from 'fs';
-import { parse } from 'svg-parser';
+const fs = require('fs');
+const { parse }  = require('svg-parser');
 
 var args = process.argv.slice(2);
 const origin = args[0];
@@ -15,6 +15,7 @@ const combine = new Promise((resolve, reject) => {
 
     const total = files.length;
     const promises = [];
+    const map = {};
 
     files.forEach((file, index) => {
       if (!file.endsWith('.svg')) {
@@ -34,8 +35,10 @@ const combine = new Promise((resolve, reject) => {
               });
             }
 
-            const id = 'icon-' + file.replace('.svg', '');
+            const name = file.replace('.svg', '');
+            const id = 'icon-' + name;
             const svg = parse(data);
+            map[name] = id;
 
             const { attributes, children = [] } = svg;
             const attributesAsStr = Object.keys(attributes)
@@ -56,11 +59,12 @@ const combine = new Promise((resolve, reject) => {
     });
 
     Promise.all(promises).then(results => {
-      resolve(
-        `<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">\n${results.join(
+      resolve({
+        svg: `<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">\n${results.join(
           '\n'
-        )}\n</svg>`
-      );
+        )}\n</svg>`,
+        map
+      });
     });
   });
 });
@@ -70,7 +74,7 @@ const handleNode = node => {
     return '';
   }
 
-  const { name, children = [], attributes } = node;
+  const { name, children = [], attributes = {} } = node;
   const attributesAsStr = Object.keys(attributes)
     .filter(key => key !== 'xmlns')
     .map(key => `${key}="${attributes[key]}"`)
@@ -83,12 +87,19 @@ const handleNode = node => {
   return shape;
 };
 
-combine.then(result => {
-  fs.writeFile(destination + './combined-svg.svg', result, err => {
+combine.then(({ svg, map }) => {
+  fs.writeFile(destination + './combined-svg.svg', svg, err => {
     // throws an error, you could also catch it here
     if (err) throw err;
 
     // success case, the file was saved
     console.log('Combined SVG was saved!');
+  });
+  fs.writeFile(destination + './icons.json', JSON.stringify(map, null, '  '), err => {
+    // throws an error, you could also catch it here
+    if (err) throw err;
+
+    // success case, the file was saved
+    console.log('Icon mapping was saved!');
   });
 });
